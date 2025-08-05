@@ -246,7 +246,8 @@ public class CourseSearchService {
 
     private List<CourseDocument> searchCharacterMatch(String q, String sort, int page, int size) {
         try {
-            List<CourseDocument> allCourses = executeSearch(new Criteria(), sort, 0, 100);
+            SearchResponse allCoursesResponse = findAllCourses(sort, 0, 100);
+            List<CourseDocument> allCourses = allCoursesResponse.getCourses();
             List<CourseDocument> matches = new ArrayList<>();
 
             String queryLower = q.toLowerCase();
@@ -304,34 +305,54 @@ public class CourseSearchService {
                                                  int page,
                                                  int size) {
 
-        if (q == null || q.isBlank() || hasOtherFilters(minAge, maxAge, minPrice, maxPrice, category, type, nextSessionDate)) {
-            return searchCourses(q, minAge, maxAge, minPrice, maxPrice, category, type, nextSessionDate, sort, page, size);
+        // If query is blank OR any other filter is present, fall back to normal search
+        if (q == null || q.isBlank() ||
+                hasOtherFilters(minAge, maxAge, minPrice, maxPrice,
+                        category, type, nextSessionDate)) {
+
+            return searchCourses(q, minAge, maxAge, minPrice, maxPrice,
+                    category, type, nextSessionDate,
+                    sort, page, size);
         }
 
-        List<CourseDocument> allResults = new ArrayList<>();
-        Set<String> seenIds = new HashSet<>();
-
-        addResults(allResults, seenIds, searchExact(q, sort, page, size));
-
-        if (allResults.size() < size) {
-            addResults(allResults, seenIds, searchContains(q, sort, page, size));
-        }
-
-        if (allResults.size() < size && q.length() >= 3) {
-            addResults(allResults, seenIds, searchWildcard(q, sort, page, size));
-        }
-
-        if (allResults.size() < size && q.length() >= 3) {
-            addResults(allResults, seenIds, searchCharacterMatch(q, sort, page, size));
-        }
-
-        List<CourseDocument> finalResults = allResults.stream()
-                .limit(size)
-                .collect(Collectors.toList());
+        // --- Native fuzzy search ---
+        List<CourseDocument> courses = searchNativeFuzzy(q, sort, page, size);
 
         return SearchResponse.builder()
-                .total(allResults.size())
-                .courses(finalResults)
+                .total(courses.size())
+                .courses(courses)
                 .build();
     }
+
+
+    /**
+     * Native Elasticsearch fuzzy match using fuzziness = AUTO
+     */
+    private List<CourseDocument> searchNativeFuzzy(String q,
+                                                   String sort,
+                                                   int page,
+                                                   int size) {
+
+        Pageable pageable = createPageable(page, size, sort);
+
+        // fuzzy multi-match on title + description
+        Query fuzzyQuery = Query.of(b -> b
+                .multiMatch(mm -> mm
+                        .fields("title", "description")
+                        .query(q)
+                        .fuzziness("AUTO")      // 1–2 edits allowed automatically
+                )
+        );
+
+        NativeQuery query = NativeQuery.builder()
+                .withQuery(fuzzyQuery)
+                .withPageable(pageable)
+                .build();
+
+        SearchHits<CourseDocument> hits =
+                elasticsearchOperations.search(query, CourseDocument.class);
+
+        return hits.stream().map(SearchHit::getContent).toList();
+    }
+
 }
