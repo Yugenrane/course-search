@@ -21,16 +21,14 @@ public class DataIndexer implements ApplicationRunner {
 
     @Override
     public void run(ApplicationArguments args) throws Exception {
-        // Delete old data to avoid duplicates during development
         courseRepository.deleteAll();
 
-        InputStream input = new ClassPathResource("sample-courses.json").getInputStream();
-        List<CourseDocument> courses =
-                objectMapper.readValue(input, new TypeReference<>() {});
+        InputStream inputStream = new ClassPathResource("sample-courses.json").getInputStream();
+        List<CourseDocument> courseDocuments = objectMapper.readValue(inputStream, new TypeReference<>() {});
 
-        courses.forEach(CourseDocument::setSuggestFromTitle);
-        courseRepository.saveAll(courses);
+        courseDocuments.forEach(CourseDocument::setSuggestFromTitle);
 
-        System.out.println("Indexed " + courses.size() + " courses into Elasticsearch");
+        courseRepository.saveAll(courseDocuments);
+        System.out.println("Indexed " + courseDocuments.size() + " courses into Elasticsearch with autocomplete suggestions");
     }
 }
