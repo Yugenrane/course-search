@@ -95,7 +95,8 @@ Typo “Maht” should still match “Math for Beginners”
 _Response example (truncated):_
 {
 "total": 1,
-"courses": [
+"courses": 
+```[
 {
 "id": "C001",
 "title": "Math for Beginners",
@@ -104,7 +105,7 @@ _Response example (truncated):_
 "nextSessionDate": "2025-08-10T09:00:00Z"
 }
 ]
-}
+}```
 
 ---
 
