@@ -108,6 +108,47 @@ _Response example (truncated):_
 }``
 
 ---
+## 🧪 Testing
+
+The project includes comprehensive unit tests using **JUnit 5**, **Mockito**, and **JaCoCo** for coverage reporting.
+
+### Running Tests
+Run all unit tests
+./mvnw clean test
+
+Run tests with coverage report
+./mvnw clean test jacoco:report
+
+Alternative: using Maven directly
+mvn clean test
+mvn clean test jacoco:report
+
+### Viewing Code Coverage
+
+After running tests with JaCoCo, view the coverage report:
+Open coverage report in browser
+open target/site/jacoco/index.html # Mac
+start target/site/jacoco/index.html # Windows
+xdg-open target/site/jacoco/index.html # Linux
+
+The report shows:
+- **Line coverage percentage** for each class
+- **Branch coverage** for conditional logic
+- **Missed lines** highlighted in red
+- **Covered lines** highlighted in green
+
+### Coverage Requirements
+- **This one cover 91% code coverage**.
+- **Minimum**: 70% line coverage (enforced by JaCoCo)
+- **Build fails** if coverage drops below 70%
+- **Excludes**: Main application class, DTOs, config classes
+
+### Test Features
+- **Mock Elasticsearch** operations with Mockito
+- **Test all search scenarios** (basic, filtered, fuzzy, autocomplete)
+- **Validate edge cases** (empty queries, invalid parameters)
+- **Assert proper JSON responses** and HTTP status codes
+
 
 ## 🧪 Development Commands
 ./mvnw test # run unit tests + JaCoCo coverage
