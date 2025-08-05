@@ -81,22 +81,22 @@ Base URL: `http://localhost:8080/api`
 "http://localhost:8080/api/search/suggest?q=jav&size=5"
 
 _Response example:_
-{
+```{
 "suggestions": [
 "Java Programming",
 "JavaScript Basics"
 ]
-}
+}```
 
 ### 4  Fuzzy search (typo tolerant)
 Typo “Maht” should still match “Math for Beginners”
+
 "http://localhost:8080/api/search?q=Maht&size=3"
 
 _Response example (truncated):_
-{
+```{
 "total": 1,
-"courses": 
-```[
+"courses": [
 {
 "id": "C001",
 "title": "Math for Beginners",
