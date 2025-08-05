@@ -73,3 +73,47 @@ Base URL: `http://localhost:8080/api`
 
 ### 1  Basic search
 "http://localhost:8080/api/search?q=math&minAge=6&sort=priceAsc&page=0&size=5"
+
+### 2  List all courses (page 2)
+"http://localhost:8080/api/allCourses?page=2&size=10&sort=upcoming"
+
+### 3  Autocomplete suggestions
+"http://localhost:8080/api/search/suggest?q=jav&size=5"
+
+_Response example:_
+{
+"suggestions": [
+"Java Programming",
+"JavaScript Basics"
+]
+}
+
+### 4  Fuzzy search (typo tolerant)
+Typo “Maht” should still match “Math for Beginners”
+"http://localhost:8080/api/search?q=Maht&size=3"
+
+_Response example (truncated):_
+{
+"total": 1,
+"courses": [
+{
+"id": "C001",
+"title": "Math for Beginners",
+"category": "Math",
+"minPrice": 50.0,
+"nextSessionDate": "2025-08-10T09:00:00Z"
+}
+]
+}
+
+---
+
+## 🧪 Development Commands
+./mvnw test # run unit tests + JaCoCo coverage
+docker compose down # stop Elasticsearch container
+
+---
+
+## 📄 License
+MIT
+
