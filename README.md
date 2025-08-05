@@ -143,15 +143,6 @@ The report shows:
 - **Build fails** if coverage drops below 70%
 - **Excludes**: Main application class, DTOs, config classes
 
-### Test Structure
-src/test/java/com/example/course_search/
-├── services/
-│ ├── CourseSearchServiceTest.java # Search logic tests
-│ ├── SuggestionServiceTest.java # Autocomplete tests
-│ └── DataIndexerTest.java # Data loading tests
-└── controllers/
-└── CourseSearchControllerTest.java # REST endpoint tests
-
 ### Test Features
 - **Mock Elasticsearch** operations with Mockito
 - **Test all search scenarios** (basic, filtered, fuzzy, autocomplete)
